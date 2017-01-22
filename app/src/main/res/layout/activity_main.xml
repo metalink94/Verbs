@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    tools:context="ru.dictionary.verbs.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/btn_english"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150dp"
+            android:text="English" />
+
+        <TextView
+            android:id="@+id/btn_espanol"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn_english"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="24dp"
+            android:text="Español" />
+
+        <TextView
+            android:id="@+id/btn_russian"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn_espanol"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="24dp"
+            android:text="Русский" />
+
+        <TextView
+            android:id="@+id/btn_chines"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn_russian"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="24dp"
+            android:text="中国" />
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="24dp"
+        android:src="@mipmap/ic_launcher" />
+
+</android.support.design.widget.CoordinatorLayout>
