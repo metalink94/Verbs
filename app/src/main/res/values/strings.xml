@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Verbs</string>
+    <string name="english_1">Quick search of English irregular verbs</string>
+    <string name="english_2">Just type a verb</string>
+    <string name="english_3">Tap on the word to see the transcription</string>
+    <string name="russian_1">Быстрый поиск форм неправильных глаголов английского языка</string>
+    <string name="russian_2">Просто начинайте вводить глагол на английском или русском</string>
+    <string name="russian_3">Нажмите на слове, чтобы посмотреть транскрипцию</string>
+    <string name="chn_3">按一个词来检查音标</string>
+    <string name="chn_2">输入英语或俄语动词</string>
+    <string name="chn_1">快速 搜索英语的动词不定式</string>
 </resources>

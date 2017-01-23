@@ -35,16 +35,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_english:
-                startActivity(new Intent(this, TranslateActivity.class));
+                startActivity(new Intent(this, TranslateActivity.class).putExtra(TranslateActivity.KEY, TranslateActivity.ENGLISH));
                 break;
             case R.id.btn_espanol:
                 startActivity(new Intent(this, TranslateActivity.class));
                 break;
             case R.id.btn_russian:
-                startActivity(new Intent(this, TranslateActivity.class));
+                startActivity(new Intent(this, TranslateActivity.class).putExtra(TranslateActivity.KEY, TranslateActivity.RUSSIAN));
                 break;
             case R.id.btn_chines:
-                startActivity(new Intent(this, TranslateActivity.class));
+                startActivity(new Intent(this, TranslateActivity.class).putExtra(TranslateActivity.KEY, TranslateActivity.CHINES));
                 break;
         }
     }
