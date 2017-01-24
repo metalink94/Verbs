@@ -2,12 +2,16 @@ package ru.dictionary.verbs;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,7 +20,7 @@ import android.widget.TextView;
  * Created by Денис on 22.01.2017.
  */
 
-public class TranslateActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener{
+public class TranslateActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener{
 
     public static final int ENGLISH = 0;
     public static final int RUSSIAN = 1;
@@ -25,16 +29,41 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     private LinearLayout pager_indicator;
     private int dotsCount;
     private ImageView[] dots;
+    private EditText mVerb;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transalete);
+        setEditText();
         ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
         pager.setAdapter(new CustomPagerAdapter());
         pager.setOnPageChangeListener(this);
         pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
         setUiPageViewController();
+    }
+
+    private void setEditText() {
+        mVerb = (EditText) findViewById(R.id.ed_verb);
+        mVerb.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (mVerb.getText().length() > 0) {
+                    findViewById(R.id.viewpager).setVisibility(View.GONE);
+                    pager_indicator.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void setUiPageViewController() {
@@ -75,6 +104,16 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.transcription:
+                TextView transcription = (TextView) findViewById(R.id.transcription);
+                transcription.setText(getString(R.string.transcription));
+                transcription.setTextColor(ContextCompat.getColor(this, R.color.transcription_color));
+        }
     }
 
     class CustomPagerAdapter extends PagerAdapter {
@@ -120,6 +159,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                     } else {
                         descriptionThird.setText(getString(R.string.chn_3));
                     }
+                    findViewById(R.id.transcription).setOnClickListener(TranslateActivity.this);
                     break;
             }
             return layout;
