@@ -46,43 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setView();
-        ArrayList<BDModel> bdModels = new ArrayList<>();
-        for (String[] array : readCsv(this)) {
-            BDModel bdModel = new BDModel();
-            bdModel.original = array[0];
-            bdModel.transcription = array[1];
-            bdModel.pastSimple = array[2];
-            bdModel.pastTranscription = array[3];
-            bdModel.pastParticipal = array[4];
-            bdModel.pastParticipalTranscription = array[5];
-            bdModel.russian = array[6];
-            bdModel.spanish = array[7];
-            bdModel.chines = array[8];
-            bdModels.add(bdModel);
-        }
-        Log.d("MainActivity", "BDModelList " + bdModels.size());
-    }
-
-    public final List<String[]> readCsv(Context context) {
-        List<String[]> questionList = new ArrayList<String[]>();
-        AssetManager assetManager = context.getAssets();
-
-        try {
-            InputStream csvStream = assetManager.open("Verbs.csv");
-            InputStreamReader csvStreamReader = new InputStreamReader(csvStream);
-            CSVReader csvReader = new CSVReader(csvStreamReader);
-            String[] line;
-
-            // throw away the header
-            csvReader.readNext();
-
-            while ((line = csvReader.readNext()) != null) {
-                questionList.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return questionList;
     }
 
     @Override

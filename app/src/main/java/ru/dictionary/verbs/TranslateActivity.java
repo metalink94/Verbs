@@ -1,11 +1,12 @@
 package ru.dictionary.verbs;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -30,17 +31,32 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     private int dotsCount;
     private ImageView[] dots;
     private EditText mVerb;
+    private RecyclerView mRecyclerView;
+    private RecyclerAdapter mRecyclerAdapter;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transalete);
         setEditText();
+        setViewPager();
+        setRecyclerView();
+        setUiPageViewController();
+    }
+
+    private void setRecyclerView() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerAdapter= new RecyclerAdapter(this, Utils.getAllData(this));
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    private void setViewPager() {
         ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
+        pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
         pager.setAdapter(new CustomPagerAdapter());
         pager.setOnPageChangeListener(this);
-        pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
-        setUiPageViewController();
     }
 
     private void setEditText() {
@@ -61,6 +77,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                 if (mVerb.getText().length() > 0) {
                     findViewById(R.id.viewpager).setVisibility(View.GONE);
                     pager_indicator.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -113,6 +130,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                 TextView transcription = (TextView) findViewById(R.id.transcription);
                 transcription.setText(getString(R.string.transcription));
                 transcription.setTextColor(ContextCompat.getColor(this, R.color.transcription_color));
+                break;
         }
     }
 
