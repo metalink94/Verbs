@@ -12,6 +12,8 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,18 +23,53 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
     private List<BDModel> mDataset;
     private Context mContext;
+    private int mExtra;
 
-    public RecyclerAdapter() {
+    public RecyclerAdapter(Context aContext, int intExtra) {
+        mContext = aContext;
+        mExtra = intExtra;
+        mDataset = new ArrayList<>();
+    }
+
+    public RecyclerAdapter(Context context, List<BDModel> mData, int intExtra) {
+        mContext = context;
+        mDataset = mData;
+        mExtra = intExtra;
+    }
+
+    public void addItem(int position, BDModel item ){
+        mDataset.add(position, item);
+        notifyItemInserted(position);
+    }
+
+    public void addItem(BDModel item){
+        mDataset.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void removeList() {
+        for (int i = 0; i < mDataset.size(); i++) {
+            notifyItemRemoved(i);
+        }
+        mDataset.clear();
+    }
+
+    public List<BDModel> getList() {
+        return mDataset;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mTranslate;
-        public GridLayout layout;
+        public TextView original;
+        public TextView pastSimple;
+        public TextView pastIdent;
 
         public ViewHolder(View v) {
             super(v);
             mTranslate = (TextView) v.findViewById(R.id.translate);
-            layout = (GridLayout) v.findViewById(R.id.text_layout);
+            original = (TextView) v.findViewById(R.id.original);
+            pastSimple = (TextView) v.findViewById(R.id.pastSimple);
+            pastIdent = (TextView) v.findViewById(R.id.pastIndetifal);
         }
     }
 
@@ -49,22 +86,55 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return new ViewHolder(v);
     }
 
-    private TextView getText(String text) {
-        TextView textView = new TextView(mContext);
-        textView.setTextSize(14f);
-        textView.setText(text);
-        textView.setTextAppearance(mContext, R.style.ButtonStyle);
-        return textView;
-    }
-
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.layout.setColumnCount(3);
-        holder.layout.setRowCount(3);
-        holder.layout.addView(getText(mDataset.get(position).original));
-        holder.layout.addView(getText(mDataset.get(position).pastParticipal));
-        holder.layout.addView(getText(mDataset.get(position).pastSimple));
-        holder.mTranslate.setText(mDataset.get(position).russian);
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        final BDModel item = mDataset.get(position);
+        String translate = "";
+        switch (mExtra) {
+            case TranslateActivity.RUSSIAN:
+                translate = item.russian;
+                break;
+            case TranslateActivity.CHINES:
+                translate = item.chines;
+                break;
+            case TranslateActivity.ENGLISH:
+                translate = item.russian;
+                break;
+        }
+        holder.original.setText(item.original);
+        holder.original.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.original.getText().equals(item.original)) {
+                    holder.original.setText(item.transcription);
+                } else {
+                    holder.original.setText(item.original);
+                }
+            }
+        });
+        holder.pastSimple.setText(item.pastSimple);
+        holder.pastSimple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.pastSimple.getText().equals(item.pastSimple)) {
+                    holder.pastSimple.setText(item.pastTranscription);
+                } else {
+                    holder.pastSimple.setText(item.pastSimple);
+                }
+            }
+        });
+        holder.pastIdent.setText(item.pastParticipal);
+        holder.pastIdent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.pastIdent.getText().equals(item.pastParticipal)) {
+                    holder.pastIdent.setText(item.pastParticipalTranscription);
+                } else {
+                    holder.pastIdent.setText(item.pastParticipal);
+                }
+            }
+        });
+        holder.mTranslate.setText(translate);
 
     }
 

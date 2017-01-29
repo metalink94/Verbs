@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Денис on 22.01.2017.
@@ -33,11 +37,16 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     private EditText mVerb;
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mRecyclerAdapter;
+    private String mSearchFilter;
+    private List<BDModel> mData;
+    private ArrayList<BDModel> mDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transalete);
+        mData = Utils.getAllData(this);
+        mDataSource = new ArrayList<>(mData);
         setEditText();
         setViewPager();
         setRecyclerView();
@@ -47,9 +56,53 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     private void setRecyclerView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerAdapter= new RecyclerAdapter(this, Utils.getAllData(this));
+        mRecyclerAdapter= new RecyclerAdapter(this, getIntent().getIntExtra(KEY, 0));
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerView.setVisibility(View.GONE);
+    }
+
+    private void search(String search) {
+        if (mRecyclerAdapter.getList().size() > 0) {
+            mRecyclerAdapter.removeList();
+        }
+        for (BDModel model : mData) {
+            String translate;
+            switch (getIntent().getIntExtra(KEY, 0)) {
+                case RUSSIAN:
+                    translate = model.russian;
+                    break;
+                case CHINES:
+                    translate = model.chines;
+                    break;
+                default:
+                    translate = model.russian;
+                    break;
+            }
+            if (model.original.toLowerCase().startsWith(search.toLowerCase()) || translate.toLowerCase().startsWith(search.toLowerCase())) {
+                    mRecyclerAdapter.addItem(model);
+            }
+        }
+    }
+
+    private void applySearch(String filter) {
+        if (mRecyclerAdapter.getList().size() > 0) {
+            mRecyclerAdapter.removeList();
+        }
+        mData.clear();
+        for (BDModel recipient:mDataSource){
+                if (recipient.original.toLowerCase().startsWith(filter.toLowerCase()) ||
+                        recipient.pastSimple.toLowerCase().startsWith(filter.toLowerCase()) ||
+                        recipient.pastParticipal.toLowerCase().startsWith(filter.toLowerCase()) ||
+                        recipient.russian.toLowerCase().startsWith(filter.toLowerCase())) {
+                    mData.add(recipient);
+                }
+        }
+        mRecyclerAdapter.notifyDataSetChanged();
+        mSearchFilter = filter;
+        if (mSearchFilter.length() == 0) {
+            mData = mDataSource;
+            mSearchFilter = filter;
+        }
     }
 
     private void setViewPager() {
@@ -79,6 +132,8 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                     pager_indicator.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.VISIBLE);
                 }
+                mSearchFilter = mVerb.getText().toString();
+                search(mSearchFilter);
             }
         });
     }
