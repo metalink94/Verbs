@@ -48,10 +48,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     public void removeList() {
-        for (int i = 0; i < mDataset.size(); i++) {
-            notifyItemRemoved(i);
-        }
         mDataset.clear();
+        notifyDataSetChanged();
     }
 
     public List<BDModel> getList() {

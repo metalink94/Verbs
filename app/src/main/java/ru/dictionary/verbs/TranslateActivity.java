@@ -1,5 +1,6 @@
 package ru.dictionary.verbs;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,8 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     private String mSearchFilter;
     private List<BDModel> mData;
     private ArrayList<BDModel> mDataSource;
+    private SharedPreferences sPref;
+    final String SAVED_TEXT = "saved_text";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +66,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     }
 
     private void search(String search) {
-        if (mRecyclerAdapter.getList().size() > 0) {
+        if (mRecyclerAdapter.getList() != null && mRecyclerAdapter.getList().size() > 0) {
             mRecyclerAdapter.removeList();
         }
         for (BDModel model : mData) {
@@ -84,27 +88,6 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         }
     }
 
-    private void applySearch(String filter) {
-        if (mRecyclerAdapter.getList().size() > 0) {
-            mRecyclerAdapter.removeList();
-        }
-        mData.clear();
-        for (BDModel recipient:mDataSource){
-                if (recipient.original.toLowerCase().startsWith(filter.toLowerCase()) ||
-                        recipient.pastSimple.toLowerCase().startsWith(filter.toLowerCase()) ||
-                        recipient.pastParticipal.toLowerCase().startsWith(filter.toLowerCase()) ||
-                        recipient.russian.toLowerCase().startsWith(filter.toLowerCase())) {
-                    mData.add(recipient);
-                }
-        }
-        mRecyclerAdapter.notifyDataSetChanged();
-        mSearchFilter = filter;
-        if (mSearchFilter.length() == 0) {
-            mData = mDataSource;
-            mSearchFilter = filter;
-        }
-    }
-
     private void setViewPager() {
         ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
         pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
@@ -114,6 +97,16 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
 
     private void setEditText() {
         mVerb = (EditText) findViewById(R.id.ed_verb);
+        mVerb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mVerb.getHint().equals(getString(R.string.hint_verb))) {
+                    mVerb.setText(mVerb.getHint());
+                    mVerb.setSelection(mVerb.getHint().length());
+                }
+            }
+        });
+        loadText();
         mVerb.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -134,8 +127,29 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                 }
                 mSearchFilter = mVerb.getText().toString();
                 search(mSearchFilter);
+                saveText(mVerb.getText().toString());
             }
         });
+    }
+
+    void saveText(String text) {
+        if (text.length() == 0) {
+            mVerb.setHint(getString(R.string.hint_verb));
+        }
+        sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(SAVED_TEXT, text);
+        ed.commit();
+    }
+
+    void loadText() {
+        sPref = getPreferences(MODE_PRIVATE);
+        String savedText = sPref.getString(SAVED_TEXT, "");
+        if (savedText.equals("")) {
+            mVerb.setHint(getString(R.string.hint_verb));
+        } else {
+            mVerb.setHint(savedText);
+        }
     }
 
     private void setUiPageViewController() {
