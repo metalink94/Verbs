@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +39,6 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     private RecyclerAdapter mRecyclerAdapter;
     private String mSearchFilter;
     private List<BDModel> mData;
-    private ArrayList<BDModel> mDataSource;
     private SharedPreferences sPref;
     final String SAVED_TEXT = "saved_text";
 
@@ -50,7 +47,6 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transalete);
         mData = Utils.getAllData(this);
-        mDataSource = new ArrayList<>(mData);
         setEditText();
         setViewPager();
         setRecyclerView();

@@ -1,19 +1,13 @@
 package ru.dictionary.verbs;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,7 +19,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private Context mContext;
     private int mExtra;
 
-    public RecyclerAdapter(Context aContext, int intExtra) {
+    RecyclerAdapter(Context aContext, int intExtra) {
         mContext = aContext;
         mExtra = intExtra;
         mDataset = new ArrayList<>();
@@ -42,27 +36,27 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         notifyItemInserted(position);
     }
 
-    public void addItem(BDModel item){
+    void addItem(BDModel item){
         mDataset.add(item);
         notifyDataSetChanged();
     }
 
-    public void removeList() {
+    void removeList() {
         mDataset.clear();
         notifyDataSetChanged();
     }
 
-    public List<BDModel> getList() {
+    List<BDModel> getList() {
         return mDataset;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView mTranslate;
-        public TextView original;
-        public TextView pastSimple;
-        public TextView pastIdent;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView mTranslate;
+        TextView original;
+        TextView pastSimple;
+        TextView pastIdent;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
             mTranslate = (TextView) v.findViewById(R.id.translate);
             original = (TextView) v.findViewById(R.id.original);
