@@ -11,4 +11,10 @@
     <string name="chn_1">快速 搜索英语的动词不定式</string>
     <string name="transcription">[rid]</string>
     <string name="hint_verb">Verb/Глагол</string>
+    <string name="sorryMessageRus">К сожалению, такого глагола не найдено.</string>
+    <string name="descriptionMessageRus">Напишите нам если нашли ошибку или у вас есть предложение</string>
+    <string name="sorryMessageEng">Unfortunately, there is no such verb.</string>
+    <string name="descriptionMessageEng">Send us your suggestions and feedback</string>
+    <string name="sorryMessageChn">很可惜 ，这个动词没找到</string>
+    <string name="descriptionMessageChn">如果您找到了错误或者您有建议，请给我们发电子邮件</string>
 </resources>

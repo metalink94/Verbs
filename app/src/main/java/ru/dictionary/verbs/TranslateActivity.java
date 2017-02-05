@@ -10,7 +10,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,9 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     public static final int ENGLISH = 0;
     public static final int RUSSIAN = 1;
     public static final int CHINES = 2;
+    public static final int SPANISH = 3;
     public static final String KEY = "translate_key";
+    public static final String SAVED_FIRST = "SAVED_FIRST";
     private LinearLayout pager_indicator;
     private int dotsCount;
     private ImageView[] dots;
@@ -52,9 +52,11 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         mData = Utils.getAllData(this);
         mDataSource = new ArrayList<>(mData);
         setEditText();
-        setViewPager();
+        if (!getFirst()) {
+            setViewPager();
+            setUiPageViewController();
+        }
         setRecyclerView();
-        setUiPageViewController();
     }
 
     private void setRecyclerView() {
@@ -63,6 +65,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         mRecyclerAdapter= new RecyclerAdapter(this, getIntent().getIntExtra(KEY, 0));
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mRecyclerView.setVisibility(View.GONE);
+        findViewById(R.id.removeText).setOnClickListener(this);
     }
 
     private void search(String search) {
@@ -78,6 +81,9 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                 case CHINES:
                     translate = model.chines;
                     break;
+                case SPANISH:
+                    translate = model.spanish;
+                    break;
                 default:
                     translate = model.russian;
                     break;
@@ -85,7 +91,44 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
             if (model.original.toLowerCase().startsWith(search.toLowerCase()) || translate.toLowerCase().startsWith(search.toLowerCase())) {
                     mRecyclerAdapter.addItem(model);
             }
+            if (search.length() > 0 && mRecyclerAdapter.getList().size() == 0) {
+                showSorryMessage();
+            } else {
+                closeSorryMessage();
+            }
         }
+    }
+
+    private void showSorryMessage() {
+        findViewById(R.id.sorryLayout).setVisibility(View.VISIBLE);
+        TextView sorryMessage = (TextView) findViewById(R.id.sorrMessage);
+        TextView descriptionMessage = (TextView) findViewById(R.id.sorryDesription);
+        String sorry = "";
+        String description = "";
+        switch (getIntent().getIntExtra(KEY, 0)) {
+            case RUSSIAN:
+                sorry = getString(R.string.sorryMessageRus);
+                description = getString(R.string.descriptionMessageRus);
+                break;
+            case ENGLISH:
+                sorry = getString(R.string.sorryMessageEng);
+                description = getString(R.string.descriptionMessageEng);
+                break;
+            case CHINES:
+                sorry = getString(R.string.sorryMessageChn);
+                description = getString(R.string.descriptionMessageChn);
+                break;
+            case SPANISH:
+                sorry = getString(R.string.sorryMessageRus);
+                description = getString(R.string.descriptionMessageRus);
+                break;
+        }
+        sorryMessage.setText(sorry);
+        descriptionMessage.setText(description);
+    }
+
+    private void closeSorryMessage() {
+        findViewById(R.id.sorryLayout).setVisibility(View.GONE);
     }
 
     private void setViewPager() {
@@ -93,6 +136,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         pager_indicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
         pager.setAdapter(new CustomPagerAdapter());
         pager.setOnPageChangeListener(this);
+        saveFirstOpen();
     }
 
     private void setEditText() {
@@ -121,15 +165,32 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
             @Override
             public void afterTextChanged(Editable s) {
                 if (mVerb.getText().length() > 0) {
-                    findViewById(R.id.viewpager).setVisibility(View.GONE);
-                    pager_indicator.setVisibility(View.GONE);
+                    if (!getFirst()) {
+                        findViewById(R.id.viewpager).setVisibility(View.GONE);
+                        pager_indicator.setVisibility(View.GONE);
+                    }
                     mRecyclerView.setVisibility(View.VISIBLE);
+                    findViewById(R.id.removeText).setVisibility(View.VISIBLE);
+                } else {
+                    findViewById(R.id.removeText).setVisibility(View.INVISIBLE);
                 }
                 mSearchFilter = mVerb.getText().toString();
                 search(mSearchFilter);
                 saveText(mVerb.getText().toString());
             }
         });
+    }
+
+    void saveFirstOpen() {
+        sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putBoolean(SAVED_FIRST, true);
+        ed.commit();
+    }
+
+    boolean getFirst() {
+        sPref = getPreferences(MODE_PRIVATE);
+        return sPref.getBoolean(SAVED_FIRST, false);
     }
 
     void saveText(String text) {
@@ -199,6 +260,9 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                 TextView transcription = (TextView) findViewById(R.id.transcription);
                 transcription.setText(getString(R.string.transcription));
                 transcription.setTextColor(ContextCompat.getColor(this, R.color.transcription_color));
+                break;
+            case R.id.removeText:
+                mVerb.setText("");
                 break;
         }
     }
