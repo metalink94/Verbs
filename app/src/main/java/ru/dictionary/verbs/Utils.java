@@ -3,6 +3,7 @@ package ru.dictionary.verbs;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -11,6 +12,7 @@ import com.opencsv.CSVReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,5 +89,28 @@ public class Utils {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return dp;
+    }
+
+    public static String getVersion() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("android : ").append(Build.VERSION.RELEASE);
+
+        Field[] fields = Build.VERSION_CODES.class.getFields();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            int fieldValue = -1;
+
+            try {
+                fieldValue = field.getInt(new Object());
+            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            if (fieldValue == Build.VERSION.SDK_INT) {
+                builder.append(" : ").append(fieldName).append(" : ");
+                builder.append("sdk=").append(fieldValue);
+            }
+        }
+        return builder.toString();
     }
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private Context mContext;
     private int mExtra;
 
-    public RecyclerAdapter(Context aContext, int intExtra) {
+    RecyclerAdapter(Context aContext, int intExtra) {
         mContext = aContext;
         mExtra = intExtra;
         mDataset = new ArrayList<>();
@@ -48,12 +47,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    public void removeList() {
+    void removeList() {
         mDataset.clear();
         notifyDataSetChanged();
     }
 
-    public List<BDModel> getList() {
+    List<BDModel> getList() {
         return mDataset;
     }
 
@@ -61,7 +60,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         public TextView mTranslate;
         public LinearLayout rowTranslate;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
             mTranslate = (TextView) v.findViewById(R.id.translate);
             rowTranslate = (LinearLayout) v.findViewById(R.id.row_translate);

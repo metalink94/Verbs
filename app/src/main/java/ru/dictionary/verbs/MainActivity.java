@@ -1,27 +1,14 @@
 package ru.dictionary.verbs;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import java.lang.reflect.Field;
 
-import com.opencsv.CSVReader;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import static ru.dictionary.verbs.Utils.getVersion;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -39,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSpanish.setOnClickListener(this);
         mRussian.setOnClickListener(this);
         mChina.setOnClickListener(this);
+        findViewById(R.id.sendMail).setOnClickListener(this);
     }
 
     @Override
@@ -63,6 +51,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_chines:
                 startActivity(new Intent(this, TranslateActivity.class).putExtra(TranslateActivity.KEY, TranslateActivity.CHINES));
                 break;
+            case R.id.sendMail:
+                sendMail();
+
+                break;
         }
     }
+
+    private void sendMail() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.supportMail));
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.subjectMail));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format("%s %s", getString(R.string.android), getVersion()));
+
+        startActivity(Intent.createChooser(intent, getString(R.string.sendMail)));
+    }
+
 }

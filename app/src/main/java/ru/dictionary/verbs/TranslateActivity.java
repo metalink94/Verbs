@@ -1,6 +1,8 @@
 package ru.dictionary.verbs;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
@@ -10,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +21,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.dictionary.verbs.Utils.getVersion;
 
 /**
  * Created by Денис on 22.01.2017.
@@ -41,7 +47,6 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     private RecyclerAdapter mRecyclerAdapter;
     private String mSearchFilter;
     private List<BDModel> mData;
-    private ArrayList<BDModel> mDataSource;
     private SharedPreferences sPref;
     final String SAVED_TEXT = "saved_text";
 
@@ -50,13 +55,13 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transalete);
         mData = Utils.getAllData(this);
-        mDataSource = new ArrayList<>(mData);
         setEditText();
         if (!getFirst()) {
             setViewPager();
             setUiPageViewController();
         }
         setRecyclerView();
+        findViewById(R.id.sendButton).setOnClickListener(this);
     }
 
     private void setRecyclerView() {
@@ -165,7 +170,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
             @Override
             public void afterTextChanged(Editable s) {
                 if (mVerb.getText().length() > 0) {
-                    if (!getFirst()) {
+                    if (getFirst() && pager_indicator != null) {
                         findViewById(R.id.viewpager).setVisibility(View.GONE);
                         pager_indicator.setVisibility(View.GONE);
                     }
@@ -264,7 +269,20 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
             case R.id.removeText:
                 mVerb.setText("");
                 break;
+            case R.id.sendButton:
+                sendMail();
+                break;
         }
+    }
+
+    private void sendMail() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.supportMail));
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.subjectMail_notFound));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format("%s\n%s %s",getString(R.string.not_found, mVerb.getText().toString()), getString(R.string.android), getVersion()));
+
+        startActivity(Intent.createChooser(intent, getString(R.string.sendMail)));
     }
 
     class CustomPagerAdapter extends PagerAdapter {

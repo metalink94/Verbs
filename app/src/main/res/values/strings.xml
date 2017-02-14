@@ -17,4 +17,10 @@
     <string name="descriptionMessageEng">Send us your suggestions and feedback</string>
     <string name="sorryMessageChn">很可惜 ，这个动词没找到</string>
     <string name="descriptionMessageChn">如果您找到了错误或者您有建议，请给我们发电子邮件</string>
+    <string name="sendMail">Отправить сообщение</string>
+    <string name="supportMail">example@example.com</string>
+    <string name="subjectMail">Ошибка</string>
+    <string name="android">Версия операционной системы:</string>
+    <string name="subjectMail_notFound">Слово не найдено</string>
+    <string name="not_found">Слово %s не найдено</string>
 </resources>
