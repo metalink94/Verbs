@@ -9,16 +9,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 
 import ru.dictionary.verbs.R;
 import ru.dictionary.verbs.activities.TranslateActivity;
 import ru.dictionary.verbs.models.BDModel;
+import ru.dictionary.verbs.models.WordModel;
 import ru.dictionary.verbs.utils.Utils;
 
 /**
@@ -70,12 +73,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mTranslate;
-        public LinearLayout rowTranslate;
+        public GridLayout rowTranslate;
 
         ViewHolder(View v) {
             super(v);
             mTranslate = (TextView) v.findViewById(R.id.translate);
-            rowTranslate = (LinearLayout) v.findViewById(R.id.row_translate);
+            rowTranslate = (GridLayout) v.findViewById(R.id.row_translate);
         }
     }
 
@@ -97,17 +100,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         final BDModel item = mDataset.get(position);
         holder.rowTranslate.removeAllViews();
         holder.mTranslate.setText(setTranslate(item));
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add(item.original);
-        strings.addAll(Arrays.asList(item.pastSimple.split("\\s*,\\s*")));
-        strings.addAll(Arrays.asList(item.pastParticipal.split("\\s*,\\s*")));
-        ArrayList<String> transcription = new ArrayList<>();
-        transcription.add(item.transcription);
-        transcription.addAll(Arrays.asList(item.pastTranscription.split("\\s*,\\s*")));
-        transcription.addAll(Arrays.asList(item.pastParticipalTranscription.split("\\s*,\\s*")));
-        for (LinearLayout layout : setLayouts(strings, transcription)) {
-            holder.rowTranslate.addView(layout);
-        }
+        holder.rowTranslate.addView(setTextView(item.original, item.transcription));
+        WordModel model = new WordModel();
+        model.setList(Arrays.asList(item.pastSimple.split("\\s*,\\s*")), Arrays.asList(item.pastTranscription.split("\\s*,\\s*")));
+        holder.rowTranslate.addView(setLayout(model.getList()));
+        model.setList(Arrays.asList(item.pastParticipal.split("\\s*,\\s*")), Arrays.asList(item.pastParticipalTranscription.split("\\s*,\\s*")));
+        holder.rowTranslate.addView(setLayout(model.getList()));
     }
 
     private TextView setTextView(final String english, final String transcription) {
@@ -138,37 +136,93 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return textView;
     }
 
-    private ArrayList<LinearLayout> setLayouts(ArrayList<String> english, ArrayList<String> transcription) {
-        ArrayList<LinearLayout> linearLayouts = new ArrayList<>();
+    private TextView createTextView(int aMeasuredWidth) {
+        TextView textView = new TextView(mContext);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.leftMargin = (int) Utils.convertDpToPixel(2f, mContext);
+            params.rightMargin = (int) Utils.convertDpToPixel(2f, mContext);
+            textView.setLayoutParams(params);
+        textView.setTextColor(ContextCompat.getColor(mContext, R.color.white));
+        textView.setTextSize(15f);
+        textView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.white_transparent));
+        textView.setPadding((int) Utils.convertDpToPixel(5f,mContext),(int) Utils.convertDpToPixel(4f,mContext),
+                (int) Utils.convertDpToPixel(5f,mContext), (int) Utils.convertDpToPixel(4f,mContext));
+        return textView;
+    }
+
+    private ArrayList<TextView> setTextViews(List<WordModel> aWordModels) {
         ArrayList<TextView> textViews = new ArrayList<>();
-        for (int i = 0; i < transcription.size(); i++) {
-            textViews.add(setTextView(english.get(i), transcription.get(i)));
+        String biggestWord = "";
+        String biggetsTranscription = "";
+        ListIterator<WordModel> iterator = aWordModels.listIterator();
+        WordModel model = new WordModel();
+        while (iterator.hasNext()) {
+            WordModel wordModel = iterator.next();
+            if (wordModel.transcription.length() > biggetsTranscription.length()) {
+                biggetsTranscription = wordModel.transcription;
+                biggestWord = wordModel.english;
+                model = wordModel;
+            }
         }
-        int size = 0;
+        aWordModels.remove(model);
+        final TextView biggestTextView = createTextView(0);
+        biggestTextView.setText(biggestWord);
+        biggestTextView.measure(0, 0);
+        final String finalBiggestWord = biggestWord;
+        final String finalBiggetsTranscription = biggetsTranscription;
+        biggestTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (biggestTextView.getText().equals(finalBiggestWord)) {
+                    biggestTextView.setText(finalBiggetsTranscription);
+                    biggestTextView.setTextColor(ContextCompat.getColor(mContext, R.color.transcription_color));
+                } else {
+                    biggestTextView.setText(finalBiggestWord);
+                    biggestTextView.setTextColor(ContextCompat.getColor(mContext, R.color.white));
+                }
+            }
+        });
+        textViews.add(biggestTextView);
+        iterator = aWordModels.listIterator();
+        while (iterator.hasNext()) {
+            final WordModel wordModel = iterator.next();
+            final TextView textView = createTextView(biggestTextView.getMeasuredWidth());
+            textView.setText(wordModel.english);
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (textView.getText().equals(wordModel.english)) {
+                        textView.setText(wordModel.transcription);
+                        textView.setTextColor(ContextCompat.getColor(mContext, R.color.transcription_color));
+                    } else {
+                        textView.setText(wordModel.english);
+                        textView.setTextColor(ContextCompat.getColor(mContext, R.color.white));
+                    }
+                }
+            });
+            textViews.add(textView);
+        }
+        return textViews;
+    }
+
+    private LinearLayout setLayout(List<WordModel> aWordModels) {
+        ArrayList<TextView> textViews = new ArrayList<>();
+        textViews.addAll(setTextViews(aWordModels));
+        /*for (int i = 0; i < transcription.size(); i++) {
+            textViews.add(setTextView(english.get(i), transcription.get(i)));
+        }*/
         DisplayMetrics metrics = new DisplayMetrics();
         ((Activity) mContext).getWindowManager().getDefaultDisplay().getMetrics(metrics);
         LinearLayout layout = new LinearLayout(mContext);
-        layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        layout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         layout.setGravity(Gravity.CENTER);
-        LinearLayout layout1 = new LinearLayout(mContext);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.topMargin = 10;
-        layout1.setLayoutParams(params);
-        layout1.setGravity(Gravity.CENTER);
+        layout.setOrientation(LinearLayout.VERTICAL);
         for (TextView textView : textViews) {
             textView.measure(0, 0);
-            size = (int) (size + textView.getMeasuredWidth() + Utils.convertDpToPixel(4f,mContext));
-            if (size < metrics.widthPixels) {
-                layout.addView(textView);
-            } else {
-                layout1.addView(textView);
-            }
+            layout.addView(textView);
         }
-        linearLayouts.add(layout);
-        if (layout1.getChildCount() > 0) {
-            linearLayouts.add(layout1);
-        }
-        return linearLayouts;
+        return layout;
     }
 
     private String setTranslate(BDModel item) {

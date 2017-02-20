@@ -9,7 +9,9 @@
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:background="@color/white"
         android:elevation="4dp">
 
@@ -19,6 +21,7 @@
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/about"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -34,7 +37,8 @@
                 android:hint="@string/hint_verb"
                 android:maxLines="1"
                 android:padding="13dp"
-                android:textColorHint="#cdcdcd" />
+                android:textColorHint="#cdcdcd"
+                android:textCursorDrawable="@drawable/cursor_color"/>
 
             <ImageView
                 android:id="@+id/removeText"
