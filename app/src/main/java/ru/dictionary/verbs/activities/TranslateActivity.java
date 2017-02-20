@@ -1,8 +1,7 @@
-package ru.dictionary.verbs;
+package ru.dictionary.verbs.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
@@ -12,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,17 +19,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import static ru.dictionary.verbs.Utils.getVersion;
+import ru.dictionary.verbs.R;
+import ru.dictionary.verbs.models.BDModel;
+import ru.dictionary.verbs.utils.Utils;
+import ru.dictionary.verbs.utils.adapters.RecyclerAdapter;
+
+import static ru.dictionary.verbs.utils.Utils.getVersion;
 
 /**
  * Created by Денис on 22.01.2017.
  */
 
-public class TranslateActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener{
+public class TranslateActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
 
     public static final int ENGLISH = 0;
     public static final int RUSSIAN = 1;
@@ -56,20 +57,24 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         setContentView(R.layout.activity_transalete);
         mData = Utils.getAllData(this);
         setEditText();
-        if (!getFirst()) {
+        setRecyclerView();
+        if (getFirst()) {
             setViewPager();
             setUiPageViewController();
         }
-        setRecyclerView();
         findViewById(R.id.sendButton).setOnClickListener(this);
+        findViewById(R.id.about).setOnClickListener(this);
     }
 
     private void setRecyclerView() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerAdapter= new RecyclerAdapter(this, getIntent().getIntExtra(KEY, 0));
+        mRecyclerAdapter = new RecyclerAdapter(this, getIntent().getIntExtra(KEY, 0));
         mRecyclerView.setAdapter(mRecyclerAdapter);
-        mRecyclerView.setVisibility(View.GONE);
+        if (getFirst()) {
+            mRecyclerView.setVisibility(View.GONE);
+        }
+        mRecyclerAdapter.addItems(mData);
         findViewById(R.id.removeText).setOnClickListener(this);
     }
 
@@ -94,7 +99,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                     break;
             }
             if (model.original.toLowerCase().startsWith(search.toLowerCase()) || translate.toLowerCase().startsWith(search.toLowerCase())) {
-                    mRecyclerAdapter.addItem(model);
+                mRecyclerAdapter.addItem(model);
             }
             if (search.length() > 0 && mRecyclerAdapter.getList().size() == 0) {
                 showSorryMessage();
@@ -170,7 +175,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
             @Override
             public void afterTextChanged(Editable s) {
                 if (mVerb.getText().length() > 0) {
-                    if (getFirst() && pager_indicator != null) {
+                    if (!getFirst() && pager_indicator != null) {
                         findViewById(R.id.viewpager).setVisibility(View.GONE);
                         pager_indicator.setVisibility(View.GONE);
                     }
@@ -189,13 +194,13 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
     void saveFirstOpen() {
         sPref = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putBoolean(SAVED_FIRST, true);
+        ed.putBoolean(SAVED_FIRST, false);
         ed.commit();
     }
 
     boolean getFirst() {
         sPref = getPreferences(MODE_PRIVATE);
-        return sPref.getBoolean(SAVED_FIRST, false);
+        return sPref.getBoolean(SAVED_FIRST, true);
     }
 
     void saveText(String text) {
@@ -272,6 +277,8 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
             case R.id.sendButton:
                 sendMail();
                 break;
+            case R.id.about:
+                startActivity(new Intent(TranslateActivity.this, AboutActivity.class));
         }
     }
 
@@ -280,7 +287,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.supportMail));
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.subjectMail_notFound));
-        intent.putExtra(Intent.EXTRA_TEXT, String.format("%s\n%s %s",getString(R.string.not_found, mVerb.getText().toString()), getString(R.string.android), getVersion()));
+        intent.putExtra(Intent.EXTRA_TEXT, String.format("%s\n%s %s", getString(R.string.not_found, mVerb.getText().toString()), getString(R.string.android), getVersion()));
 
         startActivity(Intent.createChooser(intent, getString(R.string.sendMail)));
     }
@@ -303,7 +310,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                     TextView descriptionFirst = (TextView) findViewById(R.id.description_first);
                     if (getIntent().getIntExtra(KEY, 0) == ENGLISH) {
                         descriptionFirst.setText(getString(R.string.english_1));
-                    } else if (getIntent().getIntExtra(KEY, 0) == RUSSIAN){
+                    } else if (getIntent().getIntExtra(KEY, 0) == RUSSIAN) {
                         descriptionFirst.setText(getString(R.string.russian_1));
                     } else {
                         descriptionFirst.setText(getString(R.string.chn_1));
@@ -313,7 +320,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                     TextView descriptionSecond = (TextView) findViewById(R.id.description_second);
                     if (getIntent().getIntExtra(KEY, 0) == ENGLISH) {
                         descriptionSecond.setText(getString(R.string.english_2));
-                    } else if (getIntent().getIntExtra(KEY, 0) == RUSSIAN){
+                    } else if (getIntent().getIntExtra(KEY, 0) == RUSSIAN) {
                         descriptionSecond.setText(getString(R.string.russian_2));
                     } else {
                         descriptionSecond.setText(getString(R.string.chn_2));
@@ -323,7 +330,7 @@ public class TranslateActivity extends AppCompatActivity implements ViewPager.On
                     TextView descriptionThird = (TextView) findViewById(R.id.description_third);
                     if (getIntent().getIntExtra(KEY, 0) == ENGLISH) {
                         descriptionThird.setText(getString(R.string.english_3));
-                    } else if (getIntent().getIntExtra(KEY, 0) == RUSSIAN){
+                    } else if (getIntent().getIntExtra(KEY, 0) == RUSSIAN) {
                         descriptionThird.setText(getString(R.string.russian_3));
                     } else {
                         descriptionThird.setText(getString(R.string.chn_3));

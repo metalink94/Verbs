@@ -8,4 +8,6 @@
     <color name="dot_unselected">#66FFFFFF</color>
     <color name="transcription_color">#455A64</color>
     <color name="translate_color">#80FFFFFF</color>
+    <color name="about_color">#B27BE7</color>
+    <color name="about_status_color">#A06DCF</color>
 </resources>

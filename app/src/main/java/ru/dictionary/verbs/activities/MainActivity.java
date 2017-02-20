@@ -1,14 +1,15 @@
-package ru.dictionary.verbs;
+package ru.dictionary.verbs.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
-import java.lang.reflect.Field;
 
-import static ru.dictionary.verbs.Utils.getVersion;
+import ru.dictionary.verbs.R;
+import ru.dictionary.verbs.utils.Utils;
+
+import static ru.dictionary.verbs.utils.Utils.getVersion;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -52,20 +53,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, TranslateActivity.class).putExtra(TranslateActivity.KEY, TranslateActivity.CHINES));
                 break;
             case R.id.sendMail:
-                sendMail();
-
+                Utils.sendMail(this, null, getString(R.string.subjectMail));
                 break;
         }
     }
 
-    private void sendMail() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_EMAIL, getString(R.string.supportMail));
-        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.subjectMail));
-        intent.putExtra(Intent.EXTRA_TEXT, String.format("%s %s", getString(R.string.android), getVersion()));
 
-        startActivity(Intent.createChooser(intent, getString(R.string.sendMail)));
-    }
 
 }

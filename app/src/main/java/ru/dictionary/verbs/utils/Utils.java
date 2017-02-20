@@ -1,6 +1,7 @@
-package ru.dictionary.verbs;
+package ru.dictionary.verbs.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Build;
@@ -15,6 +16,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.dictionary.verbs.R;
+import ru.dictionary.verbs.models.BDModel;
 
 /**
  * Created by Денис on 28.01.2017.
@@ -112,5 +116,18 @@ public class Utils {
             }
         }
         return builder.toString();
+    }
+
+    public static void sendMail(Context aContext, String mail, String subject) {
+        if (mail == null || mail.isEmpty()) {
+            mail = aContext.getString(R.string.supportMail);
+        }
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, mail);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, String.format("%s %s", aContext.getString(R.string.android), getVersion()));
+
+        aContext.startActivity(Intent.createChooser(intent, aContext.getString(R.string.sendMail)));
     }
 }

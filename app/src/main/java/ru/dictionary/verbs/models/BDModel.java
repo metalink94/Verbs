@@ -1,4 +1,4 @@
-package ru.dictionary.verbs;
+package ru.dictionary.verbs.models;
 
 /**
  * Created by Денис on 24.01.2017.

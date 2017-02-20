@@ -1,4 +1,4 @@
-package ru.dictionary.verbs;
+package ru.dictionary.verbs.utils.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ru.dictionary.verbs.R;
+import ru.dictionary.verbs.activities.TranslateActivity;
+import ru.dictionary.verbs.models.BDModel;
+import ru.dictionary.verbs.utils.Utils;
+
 /**
  * Created by Денис on 28.01.2017.
  */
@@ -25,7 +30,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private Context mContext;
     private int mExtra;
 
-    RecyclerAdapter(Context aContext, int intExtra) {
+    public RecyclerAdapter(Context aContext, int intExtra) {
         mContext = aContext;
         mExtra = intExtra;
         mDataset = new ArrayList<>();
@@ -37,6 +42,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         mExtra = intExtra;
     }
 
+
+
     public void addItem(int position, BDModel item) {
         mDataset.add(position, item);
         notifyItemInserted(position);
@@ -47,12 +54,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         notifyDataSetChanged();
     }
 
-    void removeList() {
+    public void addItems(List<BDModel> items) {
+        mDataset.addAll(items);
+        notifyDataSetChanged();
+    }
+
+    public void removeList() {
         mDataset.clear();
         notifyDataSetChanged();
     }
 
-    List<BDModel> getList() {
+    public List<BDModel> getList() {
         return mDataset;
     }
 

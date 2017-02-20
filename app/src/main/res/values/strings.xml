@@ -23,4 +23,15 @@
     <string name="android">Версия операционной системы:</string>
     <string name="subjectMail_notFound">Слово не найдено</string>
     <string name="not_found">Слово %s не найдено</string>
+    <string name="send_us_mail">Напишите нам, если нашли ошибку или у вас есть предложение</string>
+    <string name="action_change_language">Сменить язык</string>
+    <string name="site"><u>itsengtime.ru</u></string>
+    <string name="dima">Дима Зюзин</string>
+    <string name="design">Дизайн</string>
+    <string name="dima_mail"><u>mailbox@dzyuzin.com</u></string>
+    <string name="dima_site"><u>dzyuzin.com</u></string>
+    <string name="denis">Денис Новиков</string>
+    <string name="develop">Android разработка</string>
+    <string name="denis_mail"><u>denisnovikov94@gmail.com</u></string>
+    <string name="http">http://</string>
 </resources>
