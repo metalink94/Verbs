@@ -77,9 +77,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search"
         android:clipToPadding="false"
-        android:paddingTop="24dp">
+        android:paddingTop="96dp">
 
     </android.support.v7.widget.RecyclerView>
 
